@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+
 from app.forms import ProductForm, ProductModelForm
 from app.models import Product
+
+
+# Create your views here.
 
 
 def index(request):
@@ -23,6 +26,32 @@ def product_detail(request, product_id):
     return render(request, 'app/product-detail.html', context)
 
 
+# def add_product(request):
+#     form = ProductForm()
+#     # form = None
+#     if request.method == 'POST':
+#
+#         name = request.POST['name']
+#         description = request.POST['description']
+#         price = request.POST['price']
+#         rating = request.POST['rating']
+#         discount = request.POST['discount']
+#         quantity = request.POST['quantity']
+#         form = ProductForm(request.POST)
+#         product = Product(name=name, description=description, price=price, discount=discount, quantity=quantity,
+#                           rating=rating)
+#
+#         if form.is_valid():
+#             product.save()
+#             return redirect('index')
+#
+#
+#     context = {
+#         'form': form,
+#     }
+#     return render(request, 'app/add-product.html', context)
+
+
 def add_product(request):
     form = ProductModelForm()
     if request.method == 'POST':
@@ -34,23 +63,3 @@ def add_product(request):
         'form': form,
     }
     return render(request, 'app/add-product.html', context)
-
-
-class LoginForm:
-    pass
-
-
-def login(request):
-
-
-    return render(request ,'app/login.html',content_type='text/html')
-
-def register(request):
-
-
-    return render(request ,'app/register.html',content_type='text/html')
-
-def logout(request):
-
-
-    return render(request ,'app/logout.html',content_type='text/html')
