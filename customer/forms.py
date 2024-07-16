@@ -56,3 +56,10 @@ class RegisterModelForm(forms.ModelForm):
 
         return password
 
+
+class UserModelForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+
+    class Meta:
+        model = User
+        exclude = ()

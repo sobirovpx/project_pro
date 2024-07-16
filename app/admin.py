@@ -16,6 +16,7 @@ admin.site.register(ProductAttribute)
 # admin.site.unregister(Group)
 
 
+
 class ProductModelAdmin(admin.ModelAdmin):
     list_display = ('name', 'discount', 'price')
 
