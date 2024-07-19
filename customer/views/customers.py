@@ -1,60 +1,68 @@
-
-from django.http import HttpResponse
-from customer.notifications import notify_user_via_sms_and_email
-
-from django.views.generic import TemplateView, ListView, CreateView, DeleteView, UpdateView
-from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+import csv
 from django.contrib import messages
 from django.db.models import Q
-from customer.models import Customer
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from customer.forms import CustomerModelForm
+from customer.models import Customer
+import json
 
 
-class CustomerListView(ListView):
-    model = Customer
-    template_name = 'customer/customer-list.html'
-    context_object_name = 'customer_list'
-
-    def get_queryset(self):
-        search_query = self.request.GET.get('search')
-        if search_query:
-            return Customer.objects.filter(
-                Q(full_name__icontains=search_query) | Q(address__icontains=search_query))
-        else:
-            return Customer.objects.all()
+# Create your views here.
 
 
-class AddCustomerView(CreateView):
-    form_class = CustomerModelForm
-    template_name = 'customer/add-customer.html'
-    success_url = reverse_lazy('customers')
+def customers(request):
+    search_query = request.GET.get('search')
+    if search_query:
+        customer_list = Customer.objects.filter(
+            Q(full_name__icontains=search_query) | Q(address__icontains=search_query))
+    else:
+        customer_list = Customer.objects.all()
+    context = {
+        'customer_list': customer_list,
+    }
+    return render(request, 'customer/customer-list.html', context)
 
 
-class DeleteCustomerView(DeleteView):
-    model = Customer
-    success_url = reverse_lazy('customers')
+def add_customer(request):
+    form = CustomerModelForm()
+    if request.method == 'POST':
+        form = CustomerModelForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('customers')
 
-    def delete(self, request, *args, **kwargs):
-        messages.success(self.request, 'Customer successfully deleted')
-        return super().delete(request, *args, **kwargs)
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'customer/add-customer.html', context)
 
 
-class EditCustomerView(UpdateView):
-    model = Customer
-    form_class = CustomerModelForm
-    template_name = 'customer/update-customer.html'
-    success_url = reverse_lazy('customers')
+def delete_customer(request, pk):
+    customer = Customer.objects.get(id=pk)
+    if customer:
+        customer.delete()
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Customer successfully deleted'
+        )
+        return redirect('customers')
 
 
-def send_sms_view(request):
-    phone_number = '+1234567890'
-    sms_body = 'Your SMS message here'
-    email_subject = 'SMS Sent Notification'
-    email_message = 'The following SMS was sent:'
-    recipient_email = 'recipient_email@gmail.com'
+def edit_customer(request, pk):
+    customer = Customer.objects.get(id=pk)
+    form = CustomerModelForm(instance=customer)
+    if request.method == 'POST':
+        form = CustomerModelForm(instance=customer, data=request.POST, files=request.FILES)
+        if form.is_valid():
+            form.save()
 
-    notify_user_via_sms_and_email(phone_number, sms_body, email_subject, email_message, recipient_email)
+            return redirect('customers')
+    context = {
+        'form': form,
+    }
+    return render(request, 'customer/update-customer.html', context)
 
-    return HttpResponse('SMS and email notification sent.')
 

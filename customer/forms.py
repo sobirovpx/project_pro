@@ -1,4 +1,5 @@
 from django import forms
+from customer.authentication import AuthenticationForm
 
 from customer.models import Customer, User
 
@@ -9,7 +10,7 @@ class CustomerModelForm(forms.ModelForm):
         exclude = ()
 
 
-class LoginForm(forms.Form):
+class LoginForm(AuthenticationForm):
     email = forms.EmailField()
     password = forms.CharField(max_length=255)
 
@@ -28,7 +29,7 @@ class LoginForm(forms.Form):
             if not user.check_password(password):
                 raise forms.ValidationError('Password did not match')
         except User.DoesNotExist:
-            raise forms.ValidationError(f'{email} does not exists')
+            raise forms.ValidationError(f'User does not exists')
         return password
 
 
@@ -37,23 +38,19 @@ class RegisterModelForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password')
+        fields = ['username', 'email', 'password']
 
     def clean_email(self):
-        email = self.cleaned_data.get('email').lower()
-
+        email = self.data.get('email').lower()
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError(f'The email {email} is already registered')
-
+            raise forms.ValidationError(f'The {email} is already registered')
         return email
 
     def clean_password(self):
-        password = self.cleaned_data.get('password')
-        confirm_password = self.cleaned_data.get('confirm_password')
-
+        password = self.data.get('password')
+        confirm_password = self.data.get('confirm_password')
         if password != confirm_password:
-            raise forms.ValidationError("Passwords don't match")
-
+            raise forms.ValidationError('Password didn\'t match')
         return password
 
 

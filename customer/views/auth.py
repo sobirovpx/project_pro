@@ -76,7 +76,6 @@ class LoginPage(LoginView):
     template_name = 'auth/login.html'
     redirect_authenticated_user = True
     authentication_form = LoginForm
-
     def get_success_url(self):
         return reverse_lazy('customers')
 
@@ -93,3 +92,4 @@ class RegisterFormView(FormView):
         user.save()
         login(self.request, user)
         return redirect('customers')
+
