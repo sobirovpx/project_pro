@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Statistics</title>
+</head>
+<body>
+    <h1>Customer Statistics</h1>
+    <p>Total Customers: {{ customer_stats.total_customers }}</p>
+    <p>Active Customers: {{ customer_stats.active_customers }}</p>
+    
+    <h2>Customers</h2>
+    <ul>
+        {% for customer in customers %}
+            <li>{{ customer.full_name }} - Number of Orders: {{ customer.num_orders }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

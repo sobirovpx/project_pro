@@ -6,6 +6,9 @@ from django.shortcuts import render, redirect
 from customer.forms import CustomerModelForm
 from customer.models import Customer
 import json
+from django.shortcuts import render
+from django.db.models import Avg, Count, Sum, F
+
 
 
 # Create your views here.
@@ -66,3 +69,17 @@ def edit_customer(request, pk):
     return render(request, 'customer/update-customer.html', context)
 
 
+def customer_statistics(request):
+    customer_stats = Customer.objects.aggregate(
+        total_customers=Count('id'),
+        active_customers=Count('id', filter=Q(is_active=True))
+    )
+    customers = Customer.objects.annotate(
+        num_orders=Count('order')
+    )
+
+    context = {
+        'customer_stats': customer_stats,
+        'customers': customers,
+    }
+    return render(request, 'customer/customer_statistics.html', context)

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Statistics</title>
+</head>
+<body>
+    <h1>Product Statistics</h1>
+    <p>Average Price: {{ product_stats.avg_price }}</p>
+    <p>Total Quantity: {{ product_stats.total_quantity }}</p>
+    <p>Average Rating: {{ product_stats.avg_rating }}</p>
+    
+    <h2>Products</h2>
+    <ul>
+        {% for product in products %}
+            <li>{{ product.name }} - Discounted Price: {{ product.discounted_price }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
